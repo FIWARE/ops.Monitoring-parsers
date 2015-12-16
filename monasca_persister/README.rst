@@ -5,7 +5,7 @@
 This parser processes monitoring data from `Monasca Persister`_ formatted as
 **data points** that should look like this:
 
-.. code:: json
+.. code::
 
     {
       "measurement": "str",     // = metric.name, UTF8-encoded
