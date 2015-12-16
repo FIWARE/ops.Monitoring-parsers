@@ -1,0 +1,8 @@
+node_modules/
+report/
+site/
+.idea/
+*.changes
+*.deb
+*.rpm
+*.log
