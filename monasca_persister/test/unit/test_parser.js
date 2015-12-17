@@ -96,4 +96,40 @@ suite('parser', function () {
         assert.equal(contextAttrs[attr], value);
     });
 
+    test('parse_ok_entity_type_region_data_point', function () {
+        var type = 'region',
+            data = require('./sample_' + type + '_data_point.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_ok_entity_id_region_data_point', function () {
+        var type = 'region',
+            data = require('./sample_' + type + '_data_point.json'),
+            region = data.tags['_region'],
+            expectedId = region,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityId, expectedId);
+    });
+
+    test('get_context_attrs_ok_region_data_point', function () {
+        var type = 'region',
+            data = require('./sample_' + type + '_data_point.json'),
+            attr = data.measurement,
+            value = data.fields.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[attr]);
+        assert.equal(contextAttrs[attr], value);
+    });
+
 });

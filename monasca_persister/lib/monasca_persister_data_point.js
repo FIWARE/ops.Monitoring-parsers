@@ -73,8 +73,11 @@ parser.parseRequest = function (reqdomain) {
     delete dataPoint.tags['_tenant_id'];
     var dimensions = dataPoint.tags;
 
-    // EntityType depends on the metric dimensions, and thus EntityId is formatted
-    if ('component' in dimensions) {
+    // EntityType depends on the measurement name and/or dimensions (i.e. tags), and thus EntityId is formatted
+    if (dataPoint.measurement.indexOf('region.') === 0) {
+        reqdomain.entityType = 'region';
+        reqdomain.entityId = region;
+    } else if ('component' in dimensions) {
         reqdomain.entityType = 'host_service';
         reqdomain.entityId = util.format('%s:%s', region, dimensions.component);
     } else {
