@@ -1,10 +1,12 @@
 {
-  "measurement": "region.used_ip",
+  "measurement": "generic",
   "time": "2015-12-15T16:02:27.000000Z",
   "fields": {
-    "value": "45"
+    "value": "measurement_value",
+    "value_meta": "{\"key\": \"value\"}"
   },
   "tags": {
+    "dimension": "generic",
     "_region": "myregion",
     "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
   }

@@ -32,6 +32,16 @@ var util = require('util');
 
 
 /**
+ * Mapping between Monasca metrics and NGSI attributes
+ */
+var metricsMappingNGSI = {
+    'region.allocated_ip': 'ipAvailable',
+    'region.pool_ip': 'ipTot',
+    'region.used_ip': 'ipUsed'
+};
+
+
+/**
  * Parser object (extends NGSI Adapter base parser).
  */
 var parser = Object.create(null);
@@ -43,7 +53,7 @@ var parser = Object.create(null);
  * @function parseRequest
  * @memberof parser
  * @param {Domain} reqdomain   Domain handling current request (includes context, timestamp, id, type, body & parser).
- * @returns {EntityData} An object with `data` attribute.
+ * @returns {EntityData} An object with `data` attribute holding data point, and also `entityType` attribute.
  *
  * Data point is a JSON that should look like this: <code>
  *         {
@@ -79,13 +89,13 @@ parser.parseRequest = function (reqdomain) {
         reqdomain.entityId = region;
     } else if ('component' in dimensions) {
         reqdomain.entityType = 'host_service';
-        reqdomain.entityId = util.format('%s:%s', region, dimensions.component);
+        reqdomain.entityId = util.format('%s:controller:%s', region, dimensions.component);
     } else {
         throw new Error('Data point could not be mapped to a NGSI entity (unknown metric name or dimensions)');
     }
 
     // Return the data point
-    return { data: dataPoint };
+    return { data: dataPoint, entityType: reqdomain.entityType };
 };
 
 
@@ -94,12 +104,31 @@ parser.parseRequest = function (reqdomain) {
  *
  * @function getContextAttrs
  * @memberof parser
- * @param {EntityData} data    Object holding raw entity data.
+ * @param {EntityData} data    Object holding raw entity data and entity type.
  * @returns {Object} Context attributes.
  */
 parser.getContextAttrs = function (entityData) {
     var attrs = {};
-    attrs[entityData.data.measurement] = entityData.data.fields.value;
+
+    // Initially map data point 'value' field as a NGSI attribute with the same name of the measurement (i.e. metric)
+    var attrName = entityData.data.measurement,
+        attrValue = entityData.data.fields['value'];
+
+    // Additional attributes depending on the entityType
+    if (entityData.entityType === 'region') {
+        var dataPointMeta = JSON.parse(entityData.data.fields['value_meta']);
+        for (var name in dataPointMeta) {
+            attrs[name] = dataPointMeta[name];
+        }
+    } else if (entityData.entityType === 'host_service') {
+        var dimensions = entityData.data.tags;
+        attrName = dimensions['component'].replace('-', '_');
+    }
+
+    // Actually add the measurement as NGSI attribute, possibly applying a name transformation
+    attrName = metricsMappingNGSI[attrName] || attrName;
+    attrs[attrName] = attrValue;
+
     return attrs;
 };
 
@@ -108,3 +137,9 @@ parser.getContextAttrs = function (entityData) {
  * Monasca Persister data point parser.
  */
 exports.parser = parser;
+
+
+/**
+ * Metrics to NGSI mapping.
+ */
+exports.metricsMappingNGSI = metricsMappingNGSI;

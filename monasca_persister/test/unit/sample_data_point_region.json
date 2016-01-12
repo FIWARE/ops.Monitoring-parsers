@@ -1,11 +1,11 @@
 {
-  "measurement": "nova-scheduler",
+  "measurement": "region.used_ip",
   "time": "2015-12-15T16:02:27.000000Z",
   "fields": {
-    "value": "1"
+    "value": "25",
+    "value_meta": "{}"
   },
   "tags": {
-    "component": "nova-scheduler",
     "_region": "myregion",
     "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
   }

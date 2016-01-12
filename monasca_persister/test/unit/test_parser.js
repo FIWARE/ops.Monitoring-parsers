@@ -28,7 +28,9 @@
 
 var util = require('util'),
     assert = require('assert'),
-    parser = require('../../lib/monasca_persister_data_point').parser;
+    base = require('../../lib/monasca_persister_data_point'),
+    metricsMappingNGSI = base.metricsMappingNGSI,
+    parser = base.parser;
 
 
 /* jshint multistr: true, -W069 */
@@ -47,7 +49,7 @@ suite('parser', function () {
     });
 
     test('parse_fails_unknown_metric_dimensions', function () {
-        var data = require('./sample_generic_data_point.json'),
+        var data = require('./sample_data_point_generic.json'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -59,9 +61,9 @@ suite('parser', function () {
         );
     });
 
-    test('parse_ok_entity_type_host_service_data_point', function () {
+    test('parse_gets_valid_entity_type_of_data_point_host_service', function () {
         var type = 'host_service',
-            data = require('./sample_' + type + '_data_point.json'),
+            data = require('./sample_data_point_' + type + '.json'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -69,36 +71,36 @@ suite('parser', function () {
         assert.equal(reqdomain.entityType, type);
     });
 
-    test('parse_ok_entity_id_host_service_data_point', function () {
+    test('parse_gets_valid_entity_id_of_data_point_host_service', function () {
         var type = 'host_service',
-            data = require('./sample_' + type + '_data_point.json'),
+            data = require('./sample_data_point_' + type + '.json'),
             region = data.tags['_region'],
             service = data.tags['component'],
-            expectedId = util.format('%s:%s', region, service),
+            expectedIdPattern = util.format('%s:.*:%s', region, service),
             reqdomain = {
                 body: JSON.stringify(data)
             };
         parser.parseRequest(reqdomain);
-        assert.equal(reqdomain.entityId, expectedId);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
     });
 
-    test('get_context_attrs_ok_host_service_data_point', function () {
+    test('context_attrs_include_service_status_of_data_point_host_service', function () {
         var type = 'host_service',
-            data = require('./sample_' + type + '_data_point.json'),
-            attr = data.measurement,
-            value = data.fields.value,
+            data = require('./sample_data_point_' + type + '.json'),
+            expectedAttr = data.tags.component.replace('-', '_'),
+            expectedValue = data.fields['value'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
-        assert(contextAttrs[attr]);
-        assert.equal(contextAttrs[attr], value);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
     });
 
-    test('parse_ok_entity_type_region_data_point', function () {
+    test('parse_gets_valid_entity_type_of_data_point_region', function () {
         var type = 'region',
-            data = require('./sample_' + type + '_data_point.json'),
+            data = require('./sample_data_point_' + type + '.json'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -106,9 +108,9 @@ suite('parser', function () {
         assert.equal(reqdomain.entityType, type);
     });
 
-    test('parse_ok_entity_id_region_data_point', function () {
+    test('parse_gets_valid_entity_id_of_data_point_region', function () {
         var type = 'region',
-            data = require('./sample_' + type + '_data_point.json'),
+            data = require('./sample_data_point_' + type + '.json'),
             region = data.tags['_region'],
             expectedId = region,
             reqdomain = {
@@ -118,18 +120,40 @@ suite('parser', function () {
         assert.equal(reqdomain.entityId, expectedId);
     });
 
-    test('get_context_attrs_ok_region_data_point', function () {
+    test('context_attrs_include_measurement_of_data_point_region', function () {
         var type = 'region',
-            data = require('./sample_' + type + '_data_point.json'),
-            attr = data.measurement,
-            value = data.fields.value,
+            data = require('./sample_data_point_' + type + '.json'),
+            expectedAttr = metricsMappingNGSI[data.measurement] || data.measurement,
+            expectedValue = data.fields['value'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
-        assert(contextAttrs[attr]);
-        assert.equal(contextAttrs[attr], value);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+    });
+
+    test('context_attrs_include_metadata_of_data_point_region_pool_ip', function () {
+        var type = 'region',
+            metric = 'region.pool_ip',
+            data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
+            meta = JSON.parse(data.fields['value_meta']),
+            expectedAttr = metricsMappingNGSI[data.measurement] || data.measurement,
+            expectedValue = data.fields['value'],
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(reqdomain.entityType, type);
+        assert.equal(data.measurement, metric);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        for (var name in meta) {
+            assert(contextAttrs[name]);
+            assert.equal(contextAttrs[name], meta[name]);
+        }
     });
 
 });
