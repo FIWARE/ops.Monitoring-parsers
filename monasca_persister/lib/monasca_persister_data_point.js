@@ -38,6 +38,13 @@ var metricsMappingNGSI = {
     'region.allocated_ip': 'ipAvailable',
     'region.pool_ip': 'ipTot',
     'region.used_ip': 'ipUsed',
+    'compute.node.cpu.percent': 'cpuPct',
+    'compute.node.cpu.now': 'cpuNow',
+    'compute.node.cpu.tot': 'cpuTot',
+    'compute.node.ram.now': 'ramNow',
+    'compute.node.ram.tot': 'ramTot',
+    'compute.node.disk.now': 'diskNow',
+    'compute.node.disk.tot': 'diskTot',
     'nid': 'catalogue_ge_id'
 };
 
@@ -88,6 +95,9 @@ parser.parseRequest = function (reqdomain) {
     if (dataPoint.measurement.indexOf('region.') === 0) {
         reqdomain.entityType = 'region';
         reqdomain.entityId = region;
+    } else if (dataPoint.measurement.indexOf('compute.node.') === 0) {
+        reqdomain.entityType = 'host';
+        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if (dataPoint.measurement === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);

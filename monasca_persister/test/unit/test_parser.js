@@ -213,4 +213,54 @@ suite('parser', function () {
         assert.equal(contextAttrs[expectedAttr], expectedValue);
     });
 
+    test('parse_gets_valid_entity_type_of_data_point_host', function () {
+        var type = 'host',
+            data = require('./sample_data_point_' + type + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_host', function () {
+        var type = 'host',
+            data = require('./sample_data_point_' + type + '.json'),
+            region = data.tags['_region'],
+            resource = data.tags['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attrs_include_standard_metrics_of_data_point_host', function () {
+        var type = 'host',
+            data = require('./sample_data_point_' + type + '.json'),
+            metrics = [
+                'compute.node.cpu.percent',
+                'compute.node.cpu.now',
+                'compute.node.cpu.tot',
+                'compute.node.ram.now',
+                'compute.node.ram.tot',
+                'compute.node.disk.now',
+                'compute.node.disk.tot'
+            ];
+        for (var i in metrics) {
+            data['measurement'] = metrics[i];
+            var metricName = metrics[i],
+                expectedAttr = metricsMappingNGSI[metricName] || metricName,
+                expectedValue = data.fields['value'],
+                reqdomain = {
+                    body: JSON.stringify(data)
+                };
+            var entityData = parser.parseRequest(reqdomain),
+                contextAttrs = parser.getContextAttrs(entityData);
+            assert(contextAttrs[expectedAttr]);
+            assert.equal(contextAttrs[expectedAttr], expectedValue);
+        }
+    });
+
 });
