@@ -37,7 +37,8 @@ var util = require('util');
 var metricsMappingNGSI = {
     'region.allocated_ip': 'ipAvailable',
     'region.pool_ip': 'ipTot',
-    'region.used_ip': 'ipUsed'
+    'region.used_ip': 'ipUsed',
+    'nid': 'catalogue_ge_id'
 };
 
 
@@ -87,9 +88,12 @@ parser.parseRequest = function (reqdomain) {
     if (dataPoint.measurement.indexOf('region.') === 0) {
         reqdomain.entityType = 'region';
         reqdomain.entityId = region;
+    } else if (dataPoint.measurement === 'image') {
+        reqdomain.entityType = 'image';
+        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
         reqdomain.entityType = 'host_service';
-        reqdomain.entityId = util.format('%s:controller:%s', region, dimensions.component);
+        reqdomain.entityId = util.format('%s:controller:%s', region, dimensions['component']);
     } else {
         throw new Error('Data point could not be mapped to a NGSI entity (unknown metric name or dimensions)');
     }
@@ -110,15 +114,26 @@ parser.parseRequest = function (reqdomain) {
 parser.getContextAttrs = function (entityData) {
     var attrs = {};
 
+    // Metric value metadata (if present)
+    var dataPointMeta = JSON.parse(entityData.data.fields['value_meta'] || null);
+
     // Initially map data point 'value' field as a NGSI attribute with the same name of the measurement (i.e. metric)
     var attrName = entityData.data.measurement,
-        attrValue = entityData.data.fields['value'];
+        attrValue = entityData.data.fields['value'],
+        metaName;
 
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
-        var dataPointMeta = JSON.parse(entityData.data.fields['value_meta']);
-        for (var name in dataPointMeta) {
-            attrs[name] = dataPointMeta[name];
+        for (metaName in dataPointMeta) {
+            attrs[metaName] = dataPointMeta[metaName];
+        }
+    } else if (entityData.entityType === 'image') {
+        for (metaName in dataPointMeta) {
+            if (dataPointMeta[metaName].hasOwnProperty('nid')) {
+                attrs[metricsMappingNGSI['nid']] = dataPointMeta[metaName]['nid'];
+            } else {
+                attrs[metaName] = dataPointMeta[metaName];
+            }
         }
     } else if (entityData.entityType === 'host_service') {
         var dimensions = entityData.data.tags;

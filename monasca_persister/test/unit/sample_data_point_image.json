@@ -1,0 +1,15 @@
+{
+  "measurement": "image",
+  "time": "2015-12-15T16:02:27.000000Z",
+  "fields": {
+    "value": "1",
+    "value_meta": "{\"status\":\"active\",\"properties\":{\"type\":\"fiware:apps\",\"nid\":\"194\"},\"name\":\"wirecloud\",\"size\":1156972544}"
+  },
+  "tags": {
+    "source": "openstack",
+    "project_id": "00000000000000000000000000000001",
+    "resource_id": "b6dd5d1a-5754-40d4-81af-ed947e97e6a4",
+    "_region": "myregion",
+    "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
+  }
+}
