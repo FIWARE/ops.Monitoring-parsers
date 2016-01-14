@@ -263,4 +263,80 @@ suite('parser', function () {
         }
     });
 
+    test('parse_gets_valid_entity_type_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            region = data.tags['_region'],
+            resource = data.tags['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attrs_include_standard_dimensions_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            dimensions = data.tags,
+            metrics = ['user_id', 'project_id'],
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        for (var i in metrics) {
+            var metricName = metrics[i],
+                expectedAttr = metricsMappingNGSI[metricName] || metricName,
+                expectedValue = dimensions[metricName];
+            assert(contextAttrs[expectedAttr]);
+            assert.equal(contextAttrs[expectedAttr], expectedValue);
+        }
+    });
+
+    test('context_attrs_include_standard_metadata_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            meta = JSON.parse(data.fields['value_meta']),
+            metrics = ['name', 'host', 'status', 'instance_type', 'image_ref'],
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        for (var i in metrics) {
+            var metricName = metrics[i],
+                expectedAttr = metricsMappingNGSI[metricName] || metricName,
+                expectedValue = meta[metricName];
+            assert(contextAttrs[expectedAttr]);
+            assert.equal(contextAttrs[expectedAttr], expectedValue);
+        }
+    });
+
+    test('context_attrs_include_custom_catalogue_id_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            meta = JSON.parse(data.fields['value_meta']),
+            expectedAttr = metricsMappingNGSI['nid'],
+            expectedValue = meta.properties['nid'],
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+    });
+
 });

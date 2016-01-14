@@ -45,6 +45,10 @@ var metricsMappingNGSI = {
     'compute.node.ram.tot': 'ramTot',
     'compute.node.disk.now': 'diskNow',
     'compute.node.disk.tot': 'diskTot',
+    'instance_type': 'flavor',
+    'image_ref': 'image',
+    'project_id': 'tenant_id',
+    'host': 'host_id',
     'nid': 'catalogue_ge_id'
 };
 
@@ -101,6 +105,9 @@ parser.parseRequest = function (reqdomain) {
     } else if (dataPoint.measurement === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
+    } else if (dataPoint.measurement === 'instance') {
+        reqdomain.entityType = 'vm';
+        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
         reqdomain.entityType = 'host_service';
         reqdomain.entityId = util.format('%s:controller:%s', region, dimensions['component']);
@@ -124,13 +131,14 @@ parser.parseRequest = function (reqdomain) {
 parser.getContextAttrs = function (entityData) {
     var attrs = {};
 
-    // Metric value metadata (if present)
-    var dataPointMeta = JSON.parse(entityData.data.fields['value_meta'] || null);
+    // Dimensions and metric value metadata (if present)
+    var dimensions = entityData.data.tags,
+        dataPointMeta = JSON.parse(entityData.data.fields['value_meta'] || null),
+        metaName;
 
     // Initially map data point 'value' field as a NGSI attribute with the same name of the measurement (i.e. metric)
     var attrName = entityData.data.measurement,
-        attrValue = entityData.data.fields['value'],
-        metaName;
+        attrValue = entityData.data.fields['value'];
 
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
@@ -145,8 +153,20 @@ parser.getContextAttrs = function (entityData) {
                 attrs[metaName] = dataPointMeta[metaName];
             }
         }
+    } else if (entityData.entityType === 'vm') {
+        for (var name in dimensions) {
+            if (name.match(/user_id|project_id/)) {
+                attrs[metricsMappingNGSI[name] || name] = dimensions[name];
+            }
+        }
+        for (metaName in dataPointMeta) {
+            if (dataPointMeta[metaName].hasOwnProperty('nid')) {
+                attrs[metricsMappingNGSI['nid']] = dataPointMeta[metaName]['nid'];
+            } else {
+                attrs[metricsMappingNGSI[metaName] || metaName] = dataPointMeta[metaName];
+            }
+        }
     } else if (entityData.entityType === 'host_service') {
-        var dimensions = entityData.data.tags;
         attrName = dimensions['component'].replace('-', '_');
     }
 

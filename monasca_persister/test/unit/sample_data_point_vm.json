@@ -1,0 +1,16 @@
+{
+  "measurement": "instance",
+  "time": "2015-12-15T16:02:27.000000Z",
+  "fields": {
+    "value": "1",
+    "value_meta": "{\"name\":\"instance-0000454d\",\"host\":\"151dde92b2788503e31eb750f36a300c409b6e296f20ee86566b6573\",\"status\":\"active\",\"image_ref\":\"713ee693-882c-4259-b0f8-99623aab810c\",\"instance_type\":\"2\",\"properties\":{\"nid\":\"71\"}}"
+  },
+  "tags": {
+    "source": "openstack",
+    "user_id": "myuser",
+    "project_id": "00000000000000000000000000000001",
+    "resource_id": "b6dd5d1a-5754-40d4-81af-ed947e97e6a4",
+    "_region": "myregion",
+    "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
+  }
+}
