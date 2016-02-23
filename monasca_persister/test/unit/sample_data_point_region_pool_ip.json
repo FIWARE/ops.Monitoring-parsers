@@ -1,12 +1,21 @@
 {
-  "measurement": "region.pool_ip",
-  "time": "2015-12-15T16:02:27.000000Z",
-  "fields": {
-    "value": "45",
-    "value_meta": "{\"location\": \"IT\", \"latitude\": \"1.1\", \"longitude\": \"12.2\", \"ram_allocation_ratio\": \"1.5\", \"cpu_allocation_ratio\": \"16\"}"
+  "creation_time": 1456077495,
+  "metric": {
+    "timestamp": 1456077505000,
+    "name": "region.pool_ip",
+    "value": 45,
+    "value_meta": {
+      "location": "IT",
+      "latitude": "1.1",
+      "longitude": "12.2",
+      "ram_allocation_ratio": "1.5",
+      "cpu_allocation_ratio": "16"
+    },
+    "dimensions": {
+    }
   },
-  "tags": {
-    "_region": "myregion",
-    "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
+  "meta": {
+    "tenantId": "00000000000009442002913448960000",
+    "region": "myregion"
   }
 }

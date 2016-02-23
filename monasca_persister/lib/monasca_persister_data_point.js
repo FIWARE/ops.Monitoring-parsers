@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Telefónica I+D
+ * Copyright 2016 Telefónica I+D
  * All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -69,19 +69,24 @@ var parser = Object.create(null);
  *
  * Data point is a JSON that should look like this: <code>
  *         {
- *           "measurement": "str",                  // = metric.name, UTF8-encoded
- *           "time": "str",                         // = metric.timestamp in %Y-%m-%dT%H:%M:%S.%fZ format
- *           "fields": {
- *             "value": "...",                      // = metric.value
- *             "value_meta": "..."                  // = metric.value_meta dumped as string
+ *           "creation_time": number,               // = metric.timestamp in seconds
+ *           "metric": {
+ *             "timestamp": number,                 // = metric.timestamp in milliseconds
+ *             "name": "str",                       // = metric.name, UTF8-encoded
+ *             "value": ...,                        // = metric.value
+ *             "value_meta": {
+ *               "key": "value"
+ *             },
+ *             "dimensions": {
+ *               "<name#1>": "str",                 // = metric.dimensions[#1]
+ *               "<name#2>": "str",                 // = metric.dimensions[#2]
+ *               ...
+ *               "<name#N>": "str",                 // = metric.dimensions[#N]
+ *             }
  *           },
- *           "tags": {
- *             "<name#1>": "str",                   // = metric.dimensions[#1]
- *             "<name#2>": "str",                   // = metric.dimensions[#2]
- *             ...
- *             "<name#N>": "str",                   // = metric.dimensions[#N]
- *             "_region": "str",                    // = metric.meta.region
- *             "_tenant_id": "str"                  // = metric.meta.tenantId
+ *           "meta": {
+ *             "tenantId": "str",                   // = metric.meta.tenantId
+ *             "region": "str"                      // = metric.meta.region
  *           }
  *         }
  * </code>
@@ -89,23 +94,22 @@ var parser = Object.create(null);
 parser.parseRequest = function (reqdomain) {
     var dataPoint = JSON.parse(reqdomain.body);
 
-    // Get region and metric dimensions
-    var region = dataPoint.tags['_region'];
-    delete dataPoint.tags['_region'];
-    delete dataPoint.tags['_tenant_id'];
-    var dimensions = dataPoint.tags;
+    // Get metric name, dimensions and region
+    var name = dataPoint.metric['name'],
+        dimensions = dataPoint.metric['dimensions'],
+        region = dataPoint.meta['region'];
 
-    // EntityType depends on the measurement name and/or dimensions (i.e. tags), and thus EntityId is formatted
-    if (dataPoint.measurement.indexOf('region.') === 0) {
+    // EntityType depends on the metric name and/or dimensions, and thus EntityId is formatted
+    if (name.indexOf('region.') === 0) {
         reqdomain.entityType = 'region';
         reqdomain.entityId = region;
-    } else if (dataPoint.measurement.indexOf('compute.node.') === 0) {
+    } else if (name.indexOf('compute.node.') === 0) {
         reqdomain.entityType = 'host';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
-    } else if (dataPoint.measurement === 'image') {
+    } else if (name === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
-    } else if (dataPoint.measurement === 'instance') {
+    } else if (name === 'instance') {
         reqdomain.entityType = 'vm';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
@@ -132,25 +136,25 @@ parser.getContextAttrs = function (entityData) {
     var attrs = {};
 
     // Dimensions and metric value metadata (if present)
-    var dimensions = entityData.data.tags,
-        dataPointMeta = JSON.parse(entityData.data.fields['value_meta'] || null),
-        metaName;
+    var dimensions = entityData.data.metric['dimensions'],
+        valueMeta = entityData.data.metric['value_meta'],
+        item;
 
     // Initially map data point 'value' field as a NGSI attribute with the same name of the measurement (i.e. metric)
-    var attrName = entityData.data.measurement,
-        attrValue = entityData.data.fields['value'];
+    var attrName = entityData.data.metric['name'],
+        attrValue = entityData.data.metric['value'];
 
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
-        for (metaName in dataPointMeta) {
-            attrs[metaName] = dataPointMeta[metaName];
+        for (item in valueMeta) {
+            attrs[item] = valueMeta[item];
         }
     } else if (entityData.entityType === 'image') {
-        for (metaName in dataPointMeta) {
-            if (dataPointMeta[metaName].hasOwnProperty('nid')) {
-                attrs[metricsMappingNGSI['nid']] = dataPointMeta[metaName]['nid'];
+        for (item in valueMeta) {
+            if (valueMeta[item].hasOwnProperty('nid')) {
+                attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
             } else {
-                attrs[metaName] = dataPointMeta[metaName];
+                attrs[item] = valueMeta[item];
             }
         }
     } else if (entityData.entityType === 'vm') {
@@ -159,11 +163,11 @@ parser.getContextAttrs = function (entityData) {
                 attrs[metricsMappingNGSI[name] || name] = dimensions[name];
             }
         }
-        for (metaName in dataPointMeta) {
-            if (dataPointMeta[metaName].hasOwnProperty('nid')) {
-                attrs[metricsMappingNGSI['nid']] = dataPointMeta[metaName]['nid'];
+        for (item in valueMeta) {
+            if (valueMeta[item].hasOwnProperty('nid')) {
+                attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
             } else {
-                attrs[metricsMappingNGSI[metaName] || metaName] = dataPointMeta[metaName];
+                attrs[metricsMappingNGSI[item] || item] = valueMeta[item];
             }
         }
     } else if (entityData.entityType === 'host_service') {
