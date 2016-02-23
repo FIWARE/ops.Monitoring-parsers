@@ -1,13 +1,15 @@
 {
-  "measurement": "generic",
-  "time": "2015-12-15T16:02:27.000000Z",
-  "fields": {
-    "value": "measurement_value",
-    "value_meta": "{\"key\": \"value\"}"
+  "creation_time": 1456077495,
+  "metric": {
+    "name": "generic_metric",
+    "value": "value_metric",
+    "timestamp": 1456077505000,
+    "dimensions": {
+      "some_dimension": "value_dimension"
+    }
   },
-  "tags": {
-    "dimension": "generic",
-    "_region": "myregion",
-    "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
+  "meta": {
+    "tenantId": "00000000000009442002913448960000",
+    "region": "myregion"
   }
 }

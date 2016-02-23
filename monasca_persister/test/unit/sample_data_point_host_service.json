@@ -1,13 +1,16 @@
 {
-  "measurement": "processes.process_pid_count",
-  "time": "2015-12-15T16:02:27.000000Z",
-  "fields": {
-    "value": "1"
+  "creation_time": 1456077495,
+  "metric": {
+    "name": "processes.process_pid_count",
+    "value": "1",
+    "timestamp": 1456077505000,
+    "dimensions": {
+      "service:": "nova",
+      "component": "nova-scheduler"
+    }
   },
-  "tags": {
-    "service:": "nova",
-    "component": "nova-scheduler",
-    "_region": "myregion",
-    "_tenant_id": "bd14e2c8-a30c-11e5-b98d-ac162d6f9fd5"
+  "meta": {
+    "tenantId": "00000000000009442002913448960000",
+    "region": "myregion"
   }
 }
