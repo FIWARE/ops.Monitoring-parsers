@@ -10,18 +10,12 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
     {
       "creation_time": number,      // = metric.timestamp in seconds
       "metric": {
-<<<<<<< HEAD
         "timestamp": number,        // = metric.timestamp in milliseconds
         "name": "str",              // = metric.name, UTF8-encoded
         "value": ...,               // = metric.value
         "value_meta": {
           "key": "value"
         },
-=======
-        "name": "str",              // = metric.name, UTF8-encoded
-        "value": "...",             // = metric.value
-        "timestamp": number,        // = metric.timestamp in milliseconds
->>>>>>> f177d8b96a479b120d63a0bb28d352612aac9c38
         "dimensions": {
           "<name#1>": "str",        // = metric.dimensions[#1]
           "<name#2>": "str",        // = metric.dimensions[#2]
