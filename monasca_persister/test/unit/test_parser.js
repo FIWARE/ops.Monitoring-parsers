@@ -74,8 +74,8 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_host_service', function () {
         var type = 'host_service',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.tags['_region'],
-            service = data.tags['component'],
+            region = data.meta['region'],
+            service = data.metric.dimensions['component'],
             expectedIdPattern = util.format('%s:.*:%s', region, service),
             reqdomain = {
                 body: JSON.stringify(data)
@@ -87,8 +87,8 @@ suite('parser', function () {
     test('context_attrs_include_service_status_of_data_point_host_service', function () {
         var type = 'host_service',
             data = require('./sample_data_point_' + type + '.json'),
-            expectedAttr = data.tags.component.replace('-', '_'),
-            expectedValue = data.fields['value'],
+            expectedAttr = data.metric.dimensions['component'].replace('-', '_'),
+            expectedValue = data.metric.value,
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -111,7 +111,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_region', function () {
         var type = 'region',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.tags['_region'],
+            region = data.meta['region'],
             expectedId = region,
             reqdomain = {
                 body: JSON.stringify(data)
@@ -123,8 +123,8 @@ suite('parser', function () {
     test('context_attrs_include_measurement_of_data_point_region', function () {
         var type = 'region',
             data = require('./sample_data_point_' + type + '.json'),
-            expectedAttr = metricsMappingNGSI[data.measurement] || data.measurement,
-            expectedValue = data.fields['value'],
+            expectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,
+            expectedValue = data.metric.value,
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -138,21 +138,21 @@ suite('parser', function () {
         var type = 'region',
             metric = 'region.pool_ip',
             data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
-            meta = JSON.parse(data.fields['value_meta']),
-            expectedAttr = metricsMappingNGSI[data.measurement] || data.measurement,
-            expectedValue = data.fields['value'],
+            valueMeta = data.metric['value_meta'],
+            expectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,
+            expectedValue = data.metric.value,
             reqdomain = {
                 body: JSON.stringify(data)
             };
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
         assert.equal(reqdomain.entityType, type);
-        assert.equal(data.measurement, metric);
+        assert.equal(data.metric.name, metric);
         assert(contextAttrs[expectedAttr]);
         assert.equal(contextAttrs[expectedAttr], expectedValue);
-        for (var name in meta) {
-            assert(contextAttrs[name]);
-            assert.equal(contextAttrs[name], meta[name]);
+        for (var item in valueMeta) {
+            assert(contextAttrs[item]);
+            assert.equal(contextAttrs[item], valueMeta[item]);
         }
     });
 
@@ -169,8 +169,8 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.tags['_region'],
-            resource = data.tags['resource_id'],
+            region = data.meta['region'],
+            resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
             reqdomain = {
                 body: JSON.stringify(data)
@@ -182,17 +182,17 @@ suite('parser', function () {
     test('context_attrs_include_standard_metrics_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),
-            meta = JSON.parse(data.fields['value_meta']),
-            metrics = ['size', 'status', 'name'],
+            valueMeta = data.metric['value_meta'],
+            itemsMeta = ['size', 'status', 'name'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
-        for (var i in metrics) {
-            var metricName = metrics[i],
+        for (var i in itemsMeta) {
+            var metricName = itemsMeta[i],
                 expectedAttr = metricsMappingNGSI[metricName] || metricName,
-                expectedValue = meta[metricName];
+                expectedValue = valueMeta[metricName];
             assert(contextAttrs[expectedAttr]);
             assert.equal(contextAttrs[expectedAttr], expectedValue);
         }
@@ -201,9 +201,9 @@ suite('parser', function () {
     test('context_attrs_include_custom_catalogue_id_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),
-            meta = JSON.parse(data.fields['value_meta']),
+            valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI['nid'],
-            expectedValue = meta.properties['nid'],
+            expectedValue = valueMeta.properties['nid'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -226,8 +226,8 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_host', function () {
         var type = 'host',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.tags['_region'],
-            resource = data.tags['resource_id'],
+            region = data.meta['region'],
+            resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
             reqdomain = {
                 body: JSON.stringify(data)
@@ -249,10 +249,10 @@ suite('parser', function () {
                 'compute.node.disk.tot'
             ];
         for (var i in metrics) {
-            data['measurement'] = metrics[i];
+            data.metric.name = metrics[i];
             var metricName = metrics[i],
                 expectedAttr = metricsMappingNGSI[metricName] || metricName,
-                expectedValue = data.fields['value'],
+                expectedValue = data.metric.value,
                 reqdomain = {
                     body: JSON.stringify(data)
                 };
@@ -276,8 +276,8 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_vm', function () {
         var type = 'vm',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.tags['_region'],
-            resource = data.tags['resource_id'],
+            region = data.meta['region'],
+            resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
             reqdomain = {
                 body: JSON.stringify(data)
@@ -289,7 +289,7 @@ suite('parser', function () {
     test('context_attrs_include_standard_dimensions_of_data_point_vm', function () {
         var type = 'vm',
             data = require('./sample_data_point_' + type + '.json'),
-            dimensions = data.tags,
+            dimensions = data.metric.dimensions,
             metrics = ['user_id', 'project_id'],
             reqdomain = {
                 body: JSON.stringify(data)
@@ -308,17 +308,17 @@ suite('parser', function () {
     test('context_attrs_include_standard_metadata_of_data_point_vm', function () {
         var type = 'vm',
             data = require('./sample_data_point_' + type + '.json'),
-            meta = JSON.parse(data.fields['value_meta']),
-            metrics = ['name', 'host', 'status', 'instance_type', 'image_ref'],
+            valueMeta = data.metric['value_meta'],
+            itemsMeta = ['name', 'host', 'status', 'instance_type', 'image_ref'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
-        for (var i in metrics) {
-            var metricName = metrics[i],
+        for (var i in itemsMeta) {
+            var metricName = itemsMeta[i],
                 expectedAttr = metricsMappingNGSI[metricName] || metricName,
-                expectedValue = meta[metricName];
+                expectedValue = valueMeta[metricName];
             assert(contextAttrs[expectedAttr]);
             assert.equal(contextAttrs[expectedAttr], expectedValue);
         }
@@ -327,9 +327,9 @@ suite('parser', function () {
     test('context_attrs_include_custom_catalogue_id_of_data_point_vm', function () {
         var type = 'vm',
             data = require('./sample_data_point_' + type + '.json'),
-            meta = JSON.parse(data.fields['value_meta']),
+            valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI['nid'],
-            expectedValue = meta.properties['nid'],
+            expectedValue = valueMeta.properties['nid'],
             reqdomain = {
                 body: JSON.stringify(data)
             };
