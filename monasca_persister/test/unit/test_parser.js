@@ -255,13 +255,29 @@ suite('parser', function () {
         var type = 'host',
             data = require('./sample_data_point_' + type + '.json'),
             region = data.meta['region'],
-            resource = data.metric.dimensions['resource_id'],
-            expectedIdPattern = util.format('%s:%s', region, resource),
+            resource = data.metric.dimensions['resource_id'],  /* resource == host_nodename (usually same values) */
+            host = resource.split('_')[0],
+            expectedId = util.format('%s:%s', region, host),
             reqdomain = {
                 body: JSON.stringify(data)
             };
         parser.parseRequest(reqdomain);
-        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+        assert.equal(reqdomain.entityId, expectedId);
+    });
+
+    test('parse_gets_valid_entity_id_with_host_and_nodename_of_data_point_host', function () {
+        var type = 'host',
+            data = require('./sample_data_point_' + type + '.json'),
+            region = data.meta['region'],
+            host = 'myhost',
+            nodename = 'mynodename';
+        data.metric.dimensions['resource_id'] = util.format('%s_%s', host, nodename);
+        var expectedId = util.format('%s:%s_%s', region, host, nodename),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityId, expectedId);
     });
 
     test('context_attrs_include_standard_metrics_of_data_point_host', function () {

@@ -108,7 +108,7 @@ parser.parseRequest = function (reqdomain) {
         reqdomain.entityId = region;
     } else if (name.indexOf('compute.node.') === 0) {
         reqdomain.entityType = 'host';
-        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
+        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id'].replace(/^(.*)_\1$/, '$1'));
     } else if (name === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
