@@ -74,8 +74,11 @@ var parser = Object.create(null);
  *             "timestamp": number,                 // = metric.timestamp in milliseconds
  *             "name": "str",                       // = metric.name, UTF8-encoded
  *             "value": ...,                        // = metric.value
- *             "value_meta": {
- *               "key": "value"
+ *             "value_meta": {                      // = metric.value_meta with stringified values
+ *               "<key#1>": "str",
+ *               "<key#2>": "str",
+ *               ...
+ *               "properties": "{\"key\": value}"
  *             },
  *             "dimensions": {
  *               "<name#1>": "str",                 // = metric.dimensions[#1]
@@ -105,7 +108,7 @@ parser.parseRequest = function (reqdomain) {
         reqdomain.entityId = region;
     } else if (name.indexOf('compute.node.') === 0) {
         reqdomain.entityType = 'host';
-        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
+        reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id'].replace(/^(.*)_\1$/, '$1'));
     } else if (name === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
@@ -140,6 +143,15 @@ parser.getContextAttrs = function (entityData) {
         valueMeta = entityData.data.metric['value_meta'],
         item;
 
+    // Unmarshal stringified value of 'properties' metadata item
+    if (valueMeta && valueMeta['properties']) {
+        try {
+            valueMeta['properties'] = JSON.parse(valueMeta['properties']);
+        } catch (e) {
+            delete valueMeta['properties'];
+        }
+    }
+
     // Initially map data point 'value' field as a NGSI attribute with the same name of the measurement (i.e. metric)
     var attrName = entityData.data.metric['name'],
         attrValue = entityData.data.metric['value'];
@@ -151,8 +163,10 @@ parser.getContextAttrs = function (entityData) {
         }
     } else if (entityData.entityType === 'image') {
         for (item in valueMeta) {
-            if (valueMeta[item].hasOwnProperty('nid')) {
-                attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
+            if (item === 'properties') {
+                if (valueMeta[item].hasOwnProperty('nid')) {
+                    attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
+                }
             } else {
                 attrs[item] = valueMeta[item];
             }
@@ -164,8 +178,10 @@ parser.getContextAttrs = function (entityData) {
             }
         }
         for (item in valueMeta) {
-            if (valueMeta[item].hasOwnProperty('nid')) {
-                attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
+            if (item === 'properties') {
+                if (valueMeta[item].hasOwnProperty('nid')) {
+                    attrs[metricsMappingNGSI['nid']] = valueMeta[item]['nid'];
+                }
             } else {
                 attrs[metricsMappingNGSI[item] || item] = valueMeta[item];
             }

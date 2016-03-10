@@ -5,6 +5,10 @@
     "name": "region.used_ip",
     "value": 25,
     "dimensions": {
+      "resource_id": "myregion",
+      "source": "openstack",
+      "type": "gauge",
+      "unit": "#"
     }
   },
   "meta": {
