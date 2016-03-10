@@ -13,8 +13,11 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
         "timestamp": number,        // = metric.timestamp in milliseconds
         "name": "str",              // = metric.name, UTF8-encoded
         "value": ...,               // = metric.value
-        "value_meta": {
-          "key": "value"
+        "value_meta": {             // = metric.value_meta with stringified values
+          "<key#1>": "str",
+          "<key#2>": "str",
+          ...
+          "properties": "{\"key\": value}"
         },
         "dimensions": {
           "<name#1>": "str",        // = metric.dimensions[#1]
@@ -33,7 +36,7 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
 Those data points are mapped to NGSI Entities according to the following:
 
 .. list-table:: **Entity Type = 'region'
-                  (Id taken from '_region' dimension)**
+                  (Id taken from 'region' meta item)**
    :widths: 30 20 15 20 15
    :header-rows: 1
 
@@ -124,7 +127,7 @@ file.
 |
 
 .. list-table:: **Entity Type = 'host_service'
-                  (Id taken from '_region' and 'component' dimensions)**
+                  (Id taken from 'region' meta item and 'component' dimension)**
    :widths: 30 20 15 20 15
    :header-rows: 1
 
@@ -146,7 +149,7 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
 |
 
 .. list-table:: **Entity Type = 'host'
-                  (Id taken from '_region' and 'resource_id' dimensions)**
+                  (Id taken from 'region' meta item and 'resource_id' dimension)**
    :widths: 30 20 15 20 15
    :header-rows: 1
 
@@ -194,7 +197,7 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
 |
 
 .. list-table:: **Entity Type = 'vm'
-                  (Id taken from '_region' and 'resource_id' dimensions)**
+                  (Id taken from 'region' meta item and 'resource_id' dimension)**
    :widths: 30 20 15 20 15
    :header-rows: 1
 
@@ -236,4 +239,4 @@ Taken from 'user_id' and 'project_id' dimensions, respectively.
 
 .. REFERENCES
 
-.. _Monasca Persister: https://github.com/openstack/monasca-persister/
+.. _Monasca Persister: https://github.com/telefonicaid/monasca-persister/
