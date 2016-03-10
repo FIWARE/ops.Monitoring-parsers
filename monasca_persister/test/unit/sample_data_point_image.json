@@ -6,10 +6,7 @@
     "value": 1,
     "value_meta": {
       "status": "active",
-      "properties": {
-        "type": "fiware:apps",
-        "nid": "194"
-      },
+      "properties": "{\"type\":\"fiware:apps\",\"nid\":\"194\"}",
       "name": "wirecloud",
       "size": 1156972544
     },

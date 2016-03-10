@@ -10,9 +10,7 @@
       "status": "active",
       "image_ref": "713ee693-882c-4259-b0f8-99623aab810c",
       "instance_type": "2",
-      "properties": {
-        "nid": "71"
-      }
+      "properties": "{\"nid\": \"71\"}"
     },
     "dimensions": {
       "source": "openstack",

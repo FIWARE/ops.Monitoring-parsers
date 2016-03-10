@@ -198,12 +198,12 @@ suite('parser', function () {
         }
     });
 
-    test('context_attrs_include_custom_catalogue_id_of_data_point_image', function () {
+    test('context_attrs_include_custom_catalogue_id_property_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),
             valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI['nid'],
-            expectedValue = valueMeta.properties['nid'],
+            expectedValue = valueMeta['properties'].replace(/.*"nid":.*"(\w+)".*/, '$1'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -211,6 +211,34 @@ suite('parser', function () {
             contextAttrs = parser.getContextAttrs(entityData);
         assert(contextAttrs[expectedAttr]);
         assert.equal(contextAttrs[expectedAttr], expectedValue);
+    });
+
+    test('context_attrs_ignore_other_custom_value_meta_property_of_data_point_image', function () {
+        var type = 'image',
+            data = require('./sample_data_point_' + type + '.json'),
+            valueMeta = data.metric['value_meta'],
+            attrMeta = 'custom';
+        valueMeta['properties'] = util.format('{"%s": "value"}', attrMeta);
+        var reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(contextAttrs[attrMeta], undefined);
+    });
+
+    test('context_attrs_ignore_invalid_json_in_value_meta_properties_of_data_point_image', function () {
+        var type = 'image',
+            data = require('./sample_data_point_' + type + '.json'),
+            valueMeta = data.metric['value_meta'],
+            attrMeta = metricsMappingNGSI['nid'];
+        valueMeta['properties'] = '{invalid json, "nid": 123}';
+        var reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(contextAttrs[attrMeta], undefined);
     });
 
     test('parse_gets_valid_entity_type_of_data_point_host', function () {
@@ -329,7 +357,7 @@ suite('parser', function () {
             data = require('./sample_data_point_' + type + '.json'),
             valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI['nid'],
-            expectedValue = valueMeta.properties['nid'],
+            expectedValue = valueMeta['properties'].replace(/.*"nid":.*"(\w+)".*/, '$1'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -337,6 +365,20 @@ suite('parser', function () {
             contextAttrs = parser.getContextAttrs(entityData);
         assert(contextAttrs[expectedAttr]);
         assert.equal(contextAttrs[expectedAttr], expectedValue);
+    });
+
+    test('context_attrs_ignore_other_custom_value_meta_property_of_data_point_vm', function () {
+        var type = 'vm',
+            data = require('./sample_data_point_' + type + '.json'),
+            valueMeta = data.metric['value_meta'],
+            attrMeta = 'custom';
+        valueMeta['properties'] = util.format('{"%s": "value"}', attrMeta);
+        var reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(contextAttrs[attrMeta], undefined);
     });
 
 });
