@@ -158,8 +158,15 @@ parser.getContextAttrs = function (entityData) {
 
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
-        for (item in valueMeta) {
-            attrs[item] = valueMeta[item];
+        if (attrName === 'region.sanity_status') {
+            attrs['sanity_status'] = valueMeta['status'];
+            attrs['sanity_check_elapsed_time'] = valueMeta['elapsed_time'];
+            attrs['sanity_check_timestamp'] = entityData.data.metric['timestamp'].toString();
+            attrName = attrValue = null;
+        } else {
+            for (item in valueMeta) {
+                attrs[metricsMappingNGSI[item] || item] = valueMeta[item];
+            }
         }
     } else if (entityData.entityType === 'image') {
         for (item in valueMeta) {
@@ -191,8 +198,10 @@ parser.getContextAttrs = function (entityData) {
     }
 
     // Actually add the measurement as NGSI attribute, possibly applying a name transformation
-    attrName = metricsMappingNGSI[attrName] || attrName;
-    attrs[attrName] = attrValue;
+    if (attrName) {
+        attrName = metricsMappingNGSI[attrName] || attrName;
+        attrs[attrName] = attrValue;
+    }
 
     return attrs;
 };
