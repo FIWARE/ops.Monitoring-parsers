@@ -156,6 +156,22 @@ suite('parser', function () {
         }
     });
 
+    test('context_attrs_include_status_of_data_point_region_sanity_checks', function () {
+        var type = 'region',
+            metric = 'region.sanity_checks',
+            data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
+            expectedSanityAttrs = ['sanity_status', 'sanity_check_timestamp', 'sanity_check_elapsed_time'],
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(reqdomain.entityType, type);
+        expectedSanityAttrs.forEach(function (attr) {
+            assert(contextAttrs[attr]);
+        });
+    });
+
     test('parse_gets_valid_entity_type_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),

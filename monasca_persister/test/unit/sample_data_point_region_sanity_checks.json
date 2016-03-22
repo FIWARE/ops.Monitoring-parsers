@@ -1,0 +1,22 @@
+{
+  "creation_time": 1456077495,
+  "metric": {
+    "timestamp": 1456077505000,
+    "name": "region.sanity_status",
+    "value": 1.0,
+    "value_meta": {
+      "status": "OK",
+      "elapsed_time": "1087076"
+    },
+    "dimensions": {
+      "resource_id": "myregion",
+      "source": "fihealth",
+      "type": "gauge",
+      "unit": "status"
+    }
+  },
+  "meta": {
+    "tenantId": "00000000000009442002913448960000",
+    "region": "myregion"
+  }
+}
