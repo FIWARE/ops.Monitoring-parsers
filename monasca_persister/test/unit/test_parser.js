@@ -302,16 +302,19 @@ suite('parser', function () {
             metrics = [
                 'compute.node.cpu.percent',
                 'compute.node.cpu.now',
+                'compute.node.cpu.max',
                 'compute.node.cpu.tot',
                 'compute.node.ram.now',
+                'compute.node.ram.max',
                 'compute.node.ram.tot',
                 'compute.node.disk.now',
+                'compute.node.disk.max',
                 'compute.node.disk.tot'
             ];
         for (var i in metrics) {
             data.metric.name = metrics[i];
             var metricName = metrics[i],
-                expectedAttr = metricsMappingNGSI[metricName] || metricName,
+                expectedAttr = metricsMappingNGSI[metricName],
                 expectedValue = data.metric.value,
                 reqdomain = {
                     body: JSON.stringify(data)
