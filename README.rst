@@ -17,5 +17,5 @@ __ `NGSI Adapter parsers`_
 .. REFERENCES
 
 .. _FIWARE Monitoring: https://github.com/telefonicaid/fiware-monitoring
-.. _NGSI Adapter parsers: https://github.com/telefonicaid/fiware-monitoring/blob/master/doc/manuals/user/README.rst#ngsi-adapter-parsers
-.. _NGSI Adapter Installation and Administration Guide: https://github.com/telefonicaid/fiware-monitoring/tree/master/doc/manuals/admin
+.. _NGSI Adapter parsers: https://github.com/telefonicaid/fiware-monitoring/blob/master/doc/manuals/user/index.rst#ngsi-adapter-parsers
+.. _NGSI Adapter Installation and Administration Guide: https://github.com/telefonicaid/fiware-monitoring/tree/master/doc/manuals/admin/index.rst

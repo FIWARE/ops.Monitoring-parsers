@@ -168,6 +168,11 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
      - *= metric*
      - *[none]*
      - cpuNow
+   * - compute.node.cpu.max
+     - *[none]*
+     - *= metric*
+     - *[none]*
+     - cpuMax
    * - compute.node.cpu.tot
      - *[none]*
      - *= metric*
@@ -178,6 +183,11 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
      - *= metric*
      - *[none]*
      - diskNow
+   * - compute.node.disk.max
+     - *[none]*
+     - *= metric*
+     - *[none]*
+     - diskMax
    * - compute.node.disk.tot
      - *[none]*
      - *= metric*
@@ -188,6 +198,11 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
      - *= metric*
      - *[none]*
      - ramNow
+   * - compute.node.ram.max
+     - *[none]*
+     - *= metric*
+     - *[none]*
+     - ramMax
    * - compute.node.ram.tot
      - *[none]*
      - *= metric*
