@@ -123,8 +123,9 @@ parser.parseRequest = function (reqdomain) {
         reqdomain.entityType = 'vm';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
+        var hostname = dimensions['hostname'] || 'controller';
         reqdomain.entityType = 'host_service';
-        reqdomain.entityId = util.format('%s:controller:%s', region, dimensions['component']);
+        reqdomain.entityId = util.format('%s:%s:%s', region, hostname, dimensions['component']);
     } else {
         throw new Error('Data point could not be mapped to a NGSI entity (unknown metric name or dimensions)');
     }
