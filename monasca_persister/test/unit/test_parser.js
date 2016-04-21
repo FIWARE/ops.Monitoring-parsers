@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Telefónica I+D
+ * Copyright 2015-2016 Telefónica I+D
  * All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -37,6 +37,7 @@ var util = require('util'),
 suite('parser', function () {
 
     suiteSetup(function () {
+        this.sampleMetricRegion = 'metric_region';
     });
 
     suiteTeardown(function () {
@@ -74,7 +75,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_host_service', function () {
         var type = 'host_service',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             service = data.metric.dimensions['component'],
             expectedIdPattern = util.format('%s:.*:%s', region, service),
             reqdomain = {
@@ -111,7 +112,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_region', function () {
         var type = 'region',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             expectedId = region,
             reqdomain = {
                 body: JSON.stringify(data)
@@ -185,7 +186,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_image', function () {
         var type = 'image',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
             reqdomain = {
@@ -270,7 +271,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_host', function () {
         var type = 'host',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             resource = data.metric.dimensions['resource_id'],  /* resource == host_nodename (usually same values) */
             host = resource.split('_')[0],
             expectedId = util.format('%s:%s', region, host),
@@ -284,7 +285,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_with_host_and_nodename_of_data_point_host', function () {
         var type = 'host',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             host = 'myhost',
             nodename = 'mynodename';
         data.metric.dimensions['resource_id'] = util.format('%s_%s', host, nodename);
@@ -339,7 +340,7 @@ suite('parser', function () {
     test('parse_gets_valid_entity_id_of_data_point_vm', function () {
         var type = 'vm',
             data = require('./sample_data_point_' + type + '.json'),
-            region = data.meta['region'],
+            region = this.sampleMetricRegion,
             resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
             reqdomain = {

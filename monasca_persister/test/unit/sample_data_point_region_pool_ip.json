@@ -12,10 +12,15 @@
       "cpu_allocation_ratio": "16"
     },
     "dimensions": {
+      "resource_id": "metric_region",
+      "region": "metric_region",
+      "source": "openstack",
+      "type": "gauge",
+      "unit": "#"
     }
   },
   "meta": {
     "tenantId": "00000000000009442002913448960000",
-    "region": "myregion"
+    "region": "monasca_region"
   }
 }

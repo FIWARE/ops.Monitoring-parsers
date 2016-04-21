@@ -6,11 +6,12 @@
     "value": 1,
     "dimensions": {
       "service:": "nova",
-      "component": "nova-scheduler"
+      "component": "nova-scheduler",
+      "region": "metric_region"
     }
   },
   "meta": {
     "tenantId": "00000000000009442002913448960000",
-    "region": "myregion"
+    "region": "monasca_region"
   }
 }

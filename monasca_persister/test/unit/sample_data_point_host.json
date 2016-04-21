@@ -6,11 +6,12 @@
     "value": 5,
     "dimensions": {
       "project_id": "00000000000000000000000000000001",
-      "resource_id": "myhost_myhost"
+      "resource_id": "myhost_myhost",
+      "region": "metric_region"
     }
   },
   "meta": {
     "tenantId": "00000000000009442002913448960000",
-    "region": "myregion"
+    "region": "monasca_region"
   }
 }
