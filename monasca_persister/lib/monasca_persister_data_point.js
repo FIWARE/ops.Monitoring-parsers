@@ -84,6 +84,7 @@ var parser = Object.create(null);
  *               "properties": "{\"key\": value}"
  *             },
  *             "dimensions": {
+ *               "region": "str",                   // = dimension always added to bind metric to a specific region
  *               "<name#1>": "str",                 // = metric.dimensions[#1]
  *               "<name#2>": "str",                 // = metric.dimensions[#2]
  *               ...
@@ -91,8 +92,8 @@ var parser = Object.create(null);
  *             }
  *           },
  *           "meta": {
- *             "tenantId": "str",                   // = metric.meta.tenantId
- *             "region": "str"                      // = metric.meta.region
+ *             "tenantId": "str",                   // = tenant_id if the user submitting the metric
+ *             "region": "str"                      // = region that Monasca API is bound to
  *           }
  *         }
  * </code>
@@ -103,7 +104,10 @@ parser.parseRequest = function (reqdomain) {
     // Get metric name, dimensions and region
     var name = dataPoint.metric['name'],
         dimensions = dataPoint.metric['dimensions'],
-        region = dataPoint.meta['region'];
+        region = dimensions['region'];
+
+    // Discard region dimension not needed anymore
+    delete dimensions['region'];
 
     // EntityType depends on the metric name and/or dimensions, and thus EntityId is formatted
     if (name.indexOf('region.') === 0) {

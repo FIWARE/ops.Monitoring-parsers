@@ -3,7 +3,7 @@
   "metric": {
     "timestamp": 1456077505000,
     "name": "generic_metric",
-    "value": "value_metric",
+    "value": "some_value",
     "value_meta": {
       "key": "value"
     },
@@ -13,6 +13,6 @@
   },
   "meta": {
     "tenantId": "00000000000009442002913448960000",
-    "region": "myregion"
+    "region": "monasca_region"
   }
 }

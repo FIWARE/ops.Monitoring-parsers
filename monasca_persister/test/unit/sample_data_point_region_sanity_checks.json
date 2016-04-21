@@ -9,7 +9,8 @@
       "elapsed_time": "1087076"
     },
     "dimensions": {
-      "resource_id": "myregion",
+      "resource_id": "metric_region",
+      "region": "metric_region",
       "source": "fihealth",
       "type": "gauge",
       "unit": "status"
@@ -17,6 +18,6 @@
   },
   "meta": {
     "tenantId": "00000000000009442002913448960000",
-    "region": "myregion"
+    "region": "monasca_region"
   }
 }

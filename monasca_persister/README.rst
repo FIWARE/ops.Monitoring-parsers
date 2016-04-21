@@ -20,6 +20,7 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
           "properties": "{\"key\": value}"
         },
         "dimensions": {
+          "region": "str",          // = dimension always added to bind metric to a specific region
           "<name#1>": "str",        // = metric.dimensions[#1]
           "<name#2>": "str",        // = metric.dimensions[#2]
           ...
@@ -27,8 +28,8 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
         }
       },
       "meta": {
-        "tenantId": "str",          // = metric.meta.tenantId
-        "region": "str"             // = metric.meta.region
+        "tenantId": "str",          // = tenant_id if the user submitting the metric
+        "region": "str"             // = region that Monasca API is bound to
       }
     }
 
