@@ -85,6 +85,37 @@ suite('parser', function () {
         assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
     });
 
+    test('default_controller_hostname_in_entity_id_of_data_point_host_service', function () {
+        var type = 'host_service',
+            data = require('./sample_data_point_' + type + '.json'),
+            region = this.sampleMetricRegion,
+            service = data.metric.dimensions['component'],
+            expectedIdPattern = util.format('%s:%s:%s', region, 'controller', service),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(data.metric.dimensions['hostname'], undefined);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('explicit_hostname_in_entity_id_of_data_point_host_service', function () {
+        var type = 'host_service',
+            data = require('./sample_data_point_' + type + '.json'),
+            region = this.sampleMetricRegion,
+            service = data.metric.dimensions['component'],
+            hostname = 'some_hosthame',
+            expectedIdPattern = util.format('%s:%s:%s', region, hostname, service);
+
+        data.metric.dimensions['hostname'] = hostname;
+        var reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(data.metric.dimensions['hostname'], hostname);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
     test('context_attrs_include_service_status_of_data_point_host_service', function () {
         var type = 'host_service',
             data = require('./sample_data_point_' + type + '.json'),
