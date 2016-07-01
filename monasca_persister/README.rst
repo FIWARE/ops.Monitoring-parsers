@@ -248,6 +248,31 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
        | catalogue_ge_id
        | user_id (\*)
        | tenant_id (\*)
+   * - cpu_util
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | cpuLoadPct
+   * - memory
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | ramTot
+   * - memory.usage
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | ramUsed
+   * - disk.capacity
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | diskTot
+   * - disk.usage
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | diskUsed
 
 (*)
 Taken from 'user_id' and 'project_id' dimensions, respectively.

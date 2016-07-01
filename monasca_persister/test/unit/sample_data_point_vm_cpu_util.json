@@ -2,14 +2,14 @@
   "creation_time": 1456077495,
   "metric": {
     "timestamp": 1456077505000,
-    "name": "instance",
-    "value": "1",
+    "name": "cpu_util",
+    "value": 4.87,
     "value_meta": {
       "name": "instance-0000454d",
       "host": "151dde92b2788503e31eb750f36a300c409b6e296f20ee86566b6573",
       "status": "active",
       "image_ref": "713ee693-882c-4259-b0f8-99623aab810c",
-      "instance_type": "2",
+      "instance_type": "m1.small",
       "properties": "{\"nid\": \"71\"}"
     },
     "dimensions": {

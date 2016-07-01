@@ -32,8 +32,7 @@ var util = require('util'),
     metricsMappingNGSI = base.metricsMappingNGSI,
     parser = base.parser;
 
-
-/* jshint multistr: true, -W069 */
+/* jshint multistr: true, sub: true */
 suite('parser', function () {
 
     suiteSetup(function () {
@@ -104,7 +103,7 @@ suite('parser', function () {
             data = require('./sample_data_point_' + type + '.json'),
             region = this.sampleMetricRegion,
             service = data.metric.dimensions['component'],
-            hostname = 'some_hosthame',
+            hostname = 'some_hostname',
             expectedIdPattern = util.format('%s:%s:%s', region, hostname, service);
 
         data.metric.dimensions['hostname'] = hostname;
@@ -358,9 +357,10 @@ suite('parser', function () {
         }
     });
 
-    test('parse_gets_valid_entity_type_of_data_point_vm', function () {
+    test('parse_gets_valid_entity_type_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -368,9 +368,10 @@ suite('parser', function () {
         assert.equal(reqdomain.entityType, type);
     });
 
-    test('parse_gets_valid_entity_id_of_data_point_vm', function () {
+    test('parse_gets_valid_entity_id_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             region = this.sampleMetricRegion,
             resource = data.metric.dimensions['resource_id'],
             expectedIdPattern = util.format('%s:%s', region, resource),
@@ -381,9 +382,10 @@ suite('parser', function () {
         assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
     });
 
-    test('context_attrs_include_standard_dimensions_of_data_point_vm', function () {
+    test('context_attrs_include_standard_dimensions_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             dimensions = data.metric.dimensions,
             metrics = ['user_id', 'project_id'],
             reqdomain = {
@@ -400,9 +402,10 @@ suite('parser', function () {
         }
     });
 
-    test('context_attrs_include_standard_metadata_of_data_point_vm', function () {
+    test('context_attrs_include_standard_metadata_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             valueMeta = data.metric['value_meta'],
             itemsMeta = ['name', 'host', 'status', 'instance_type', 'image_ref'],
             reqdomain = {
@@ -419,9 +422,10 @@ suite('parser', function () {
         }
     });
 
-    test('context_attrs_include_custom_catalogue_id_of_data_point_vm', function () {
+    test('context_attrs_include_custom_catalogue_id_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI['nid'],
             expectedValue = valueMeta['properties'].replace(/.*"nid":.*"(\w+)".*/, '$1'),
@@ -434,9 +438,10 @@ suite('parser', function () {
         assert.equal(contextAttrs[expectedAttr], expectedValue);
     });
 
-    test('context_attrs_ignore_other_custom_value_meta_property_of_data_point_vm', function () {
+    test('context_attrs_ignore_other_custom_value_meta_property_of_data_point_instance', function () {
         var type = 'vm',
-            data = require('./sample_data_point_' + type + '.json'),
+            metric = 'instance',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
             valueMeta = data.metric['value_meta'],
             attrMeta = 'custom';
         valueMeta['properties'] = util.format('{"%s": "value"}', attrMeta);
@@ -446,6 +451,211 @@ suite('parser', function () {
         var entityData = parser.parseRequest(reqdomain),
             contextAttrs = parser.getContextAttrs(entityData);
         assert.equal(contextAttrs[attrMeta], undefined);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_memory', function () {
+        var type = 'vm',
+            metric = 'memory',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_memory', function () {
+        var type = 'vm',
+            metric = 'memory',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_memory', function () {
+        var type = 'vm',
+            metric = 'memory',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric],
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_memory_usage', function () {
+        var type = 'vm',
+            metric = 'memory.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_memory_usage', function () {
+        var type = 'vm',
+            metric = 'memory.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_memory_usage', function () {
+        var type = 'vm',
+            metric = 'memory.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric],
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_disk_capacity', function () {
+        var type = 'vm',
+            metric = 'disk.capacity',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_disk_capacity', function () {
+        var type = 'vm',
+            metric = 'disk.capacity',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_disk_capacity', function () {
+        var type = 'vm',
+            metric = 'disk.capacity',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric],
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_disk_usage', function () {
+        var type = 'vm',
+            metric = 'disk.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_disk_usage', function () {
+        var type = 'vm',
+            metric = 'disk.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_disk_usage', function () {
+        var type = 'vm',
+            metric = 'disk.usage',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric],
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_cpu_util', function () {
+        var type = 'vm',
+            metric = 'cpu_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_cpu_util', function () {
+        var type = 'vm',
+            metric = 'cpu_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_cpu_util', function () {
+        var type = 'vm',
+            metric = 'cpu_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric],
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
     });
 
 });

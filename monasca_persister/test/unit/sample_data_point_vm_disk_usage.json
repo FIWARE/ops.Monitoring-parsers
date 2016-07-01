@@ -1,0 +1,27 @@
+{
+  "creation_time": 1456077495,
+  "metric": {
+    "timestamp": 1456077505000,
+    "name": "disk.usage",
+    "value": "321",
+    "value_meta": {
+      "name": "instance-0000454d",
+      "host": "151dde92b2788503e31eb750f36a300c409b6e296f20ee86566b6573",
+      "status": "active",
+      "image_ref": "713ee693-882c-4259-b0f8-99623aab810c",
+      "instance_type": "m1.small",
+      "properties": "{\"nid\": \"71\"}"
+    },
+    "dimensions": {
+      "source": "openstack",
+      "user_id": "myuser",
+      "project_id": "00000000000000000000000000000001",
+      "resource_id": "b6dd5d1a-5754-40d4-81af-ed947e97e6a4",
+      "region": "metric_region"
+    }
+  },
+  "meta": {
+    "tenantId": "00000000000009442002913448960000",
+    "region": "monasca_region"
+  }
+}
