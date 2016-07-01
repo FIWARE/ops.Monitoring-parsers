@@ -25,7 +25,7 @@
 
 
 'use strict';
-/* jshint curly: false, -W069 */
+/* jshint curly: false, sub: true */
 
 
 var util = require('util');
@@ -48,6 +48,11 @@ var metricsMappingNGSI = {
     'compute.node.disk.now': 'diskNow',
     'compute.node.disk.max': 'diskMax',
     'compute.node.disk.tot': 'diskTot',
+    'memory': 'ramTot',
+    'memory.usage': 'ramUsed',
+    'disk.capacity': 'diskTot',
+    'disk.usage': 'diskUsed',
+    'cpu_util': 'cpuLoadPct',
     'instance_type': 'flavor',
     'image_ref': 'image',
     'project_id': 'tenant_id',
@@ -119,7 +124,7 @@ parser.parseRequest = function (reqdomain) {
     } else if (name === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
-    } else if (name === 'instance') {
+    } else if (name.match(/instance|memory|memory.usage|disk.capacity|disk.usage|cpu_util/)) {
         reqdomain.entityType = 'vm';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
@@ -186,7 +191,7 @@ parser.getContextAttrs = function (entityData) {
                 attrs[item] = valueMeta[item];
             }
         }
-    } else if (entityData.entityType === 'vm') {
+    } else if (entityData.entityType === 'vm' && attrName === 'instance') {
         for (var name in dimensions) {
             if (name.match(/user_id|project_id/)) {
                 attrs[metricsMappingNGSI[name] || name] = dimensions[name];
