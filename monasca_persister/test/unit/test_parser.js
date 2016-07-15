@@ -173,8 +173,6 @@ suite('parser', function () {
             metric = 'region.info',
             data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
             valueMeta = data.metric['value_meta'],
-            expectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,
-            expectedValue = data.metric.value,
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -182,12 +180,25 @@ suite('parser', function () {
             contextAttrs = parser.getContextAttrs(entityData);
         assert.equal(reqdomain.entityType, type);
         assert.equal(data.metric.name, metric);
-        assert(contextAttrs[expectedAttr]);
-        assert.equal(contextAttrs[expectedAttr], expectedValue);
         for (var item in valueMeta) {
             assert(contextAttrs[item]);
             assert.equal(contextAttrs[item], valueMeta[item]);
         }
+    });
+
+    test('context_attrs_do_not_include_metric_of_data_point_region_info', function () {
+        var type = 'region',
+            metric = 'region.info',
+            data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
+            unexpectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert.equal(reqdomain.entityType, type);
+        assert.equal(data.metric.name, metric);
+        assert.equal(contextAttrs[unexpectedAttr], undefined);
     });
 
     test('context_attrs_include_status_of_data_point_region_sanity_checks', function () {

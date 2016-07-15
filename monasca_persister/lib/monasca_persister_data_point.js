@@ -172,11 +172,12 @@ parser.getContextAttrs = function (entityData) {
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
         if (attrName === 'region.sanity_status') {
+            attrName = attrValue = null;
             attrs['sanity_status'] = valueMeta['status'];
             attrs['sanity_check_elapsed_time'] = valueMeta['elapsed_time'];
             attrs['sanity_check_timestamp'] = entityData.data.metric['timestamp'].toString();
+        } else if (attrName === 'region.info') {
             attrName = attrValue = null;
-        } else {
             for (item in valueMeta) {
                 attrs[metricsMappingNGSI[item] || item] = valueMeta[item];
             }
