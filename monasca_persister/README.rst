@@ -46,6 +46,29 @@ Those data points are mapped to NGSI Entities according to the following:
      - Monasca measurement
      - Monasca value_meta
      - NGSI attributes
+   * - region.info
+     - | name
+       | location
+       | latitude
+       | longitude
+       | ram_allocation_ratio
+       | cpu_allocation_ratio
+       | {component}_version
+     - region.info
+     - |
+       | location
+       | latitude
+       | longitude
+       | ram_allocation_ratio
+       | cpu_allocation_ratio
+       | {component}_version
+     - |
+       | location
+       | latitude
+       | longitude
+       | ram_allocation_ratio
+       | cpu_allocation_ratio
+       | {component}_version
    * - region.allocated_ip
      - | name
        | location
@@ -53,6 +76,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | {component}_version
      - region.allocated_ip
      - |
        |
@@ -65,19 +89,12 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | {component}_version
      - region.pool_ip
      - |
-       | location
-       | latitude
-       | longitude
-       | ram_allocation_ratio
-       | cpu_allocation_ratio
+       |
+       | *[none, depending on configuration]* (\*)
      - | ipTot
-       | location
-       | latitude
-       | longitude
-       | ram_allocation_ratio
-       | cpu_allocation_ratio
    * - region.used_ip
      - | name
        | location
@@ -85,6 +102,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | {component}_version
      - region.used_ip
      - |
        |

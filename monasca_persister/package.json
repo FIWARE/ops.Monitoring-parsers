@@ -1,11 +1,11 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "name": "monasca_persister",
   "description": "Monasca Persister data points parser for NGSI Adapter",
   "product": {
     "name": "fiware-monitoring",
     "area": "iotplatform",
-    "release": "5.3.3"
+    "release": "5.4.1"
   },
   "keywords": [
     "FIWARE",
