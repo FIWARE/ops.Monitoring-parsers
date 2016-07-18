@@ -53,7 +53,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
-       | *component*\_version [1]
+       | *component*\_version
      - region.pool_ip
      - |
        | location
@@ -61,7 +61,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
-       | *component*\_version
+       | *component*\_version [1]
      - | ipTot
        | location
        | latitude
@@ -131,7 +131,7 @@ file.
        | catalogue_ge_id
 
 **Note:**
-``nid`` is a custom metadata property of images.
+*nid* is a custom metadata property of images.
 
 |
 
