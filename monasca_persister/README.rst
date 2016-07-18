@@ -53,7 +53,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
-       | *component*\_version
+       | *component*\_version [1]
      - region.pool_ip
      - |
        | location
@@ -68,7 +68,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
-       | *component*\_version [1]
+       | *component*\_version
    * - region.used_ip
      - | name
        | location
@@ -152,7 +152,7 @@ file.
      - *component* [\*]
 
 **[\*]**
-The 'component' dimension will identify the exact process (for instance,
+The 'component' dimension identifies the exact process (for instance,
 ``nova-api``) being part of an OpenStack service (given by the 'service'
 dimension, for instance ``nova``).
 
