@@ -24,15 +24,17 @@
 
 
 'use strict';
+/* jshint sub: true, unused: false */
 
 
 var util = require('util'),
     assert = require('assert'),
     base = require('../../lib/monasca_persister_data_point'),
     metricsMappingNGSI = base.metricsMappingNGSI,
+    regionMetricMetadata = base.regionMetricMetadata,
     parser = base.parser;
 
-/* jshint multistr: true, sub: true */
+
 suite('parser', function () {
 
     suiteSetup(function () {
@@ -129,9 +131,10 @@ suite('parser', function () {
         assert.equal(contextAttrs[expectedAttr], expectedValue);
     });
 
-    test('parse_gets_valid_entity_type_of_data_point_region', function () {
+    test('parse_gets_valid_entity_type_of_data_point_region_ip', function () {
         var type = 'region',
-            data = require('./sample_data_point_' + type + '.json'),
+            file = 'region_ip',
+            data = require('./sample_data_point_' + file + '.json'),
             reqdomain = {
                 body: JSON.stringify(data)
             };
@@ -139,9 +142,10 @@ suite('parser', function () {
         assert.equal(reqdomain.entityType, type);
     });
 
-    test('parse_gets_valid_entity_id_of_data_point_region', function () {
+    test('parse_gets_valid_entity_id_of_data_point_region_ip', function () {
         var type = 'region',
-            data = require('./sample_data_point_' + type + '.json'),
+            file = 'region_ip',
+            data = require('./sample_data_point_' + file + '.json'),
             region = this.sampleMetricRegion,
             expectedId = region,
             reqdomain = {
@@ -151,9 +155,10 @@ suite('parser', function () {
         assert.equal(reqdomain.entityId, expectedId);
     });
 
-    test('context_attrs_include_measurement_of_data_point_region', function () {
+    test('context_attrs_include_measurement_of_data_point_region_ip', function () {
         var type = 'region',
-            data = require('./sample_data_point_' + type + '.json'),
+            file = 'region_ip',
+            data = require('./sample_data_point_' + file + '.json'),
             expectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,
             expectedValue = data.metric.value,
             reqdomain = {
@@ -165,9 +170,9 @@ suite('parser', function () {
         assert.equal(contextAttrs[expectedAttr], expectedValue);
     });
 
-    test('context_attrs_include_metadata_of_data_point_region_pool_ip', function () {
+    test('context_attrs_include_metadata_of_data_point_region_ip', function () {
         var type = 'region',
-            metric = 'region.pool_ip',
+            metric = regionMetricMetadata,
             data = require('./sample_data_point_' + metric.replace('.', '_') + '.json'),
             valueMeta = data.metric['value_meta'],
             expectedAttr = metricsMappingNGSI[data.metric.name] || data.metric.name,

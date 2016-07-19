@@ -9,7 +9,12 @@
       "latitude": "1.1",
       "longitude": "12.2",
       "ram_allocation_ratio": "1.5",
-      "cpu_allocation_ratio": "16"
+      "cpu_allocation_ratio": "16",
+      "nova_version": "2015.1.1",
+      "cinder_version": "2015.1.1",
+      "neutron_version": "2015.1.1",
+      "glance_version": "2015.1.0",
+      "keystone_version": "2015.1.0"
     },
     "dimensions": {
       "resource_id": "metric_region",

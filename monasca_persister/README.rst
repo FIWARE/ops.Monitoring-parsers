@@ -38,7 +38,7 @@ Those data points are mapped to NGSI Entities according to the following:
 
 .. list-table:: **Entity Type = 'region'
                   (Id taken from 'region' meta item)**
-   :widths: 30 20 15 20 15
+   :widths: 20 20 15 20 25
    :header-rows: 1
 
    * - Ceilometer metric
@@ -46,18 +46,6 @@ Those data points are mapped to NGSI Entities according to the following:
      - Monasca measurement
      - Monasca value_meta
      - NGSI attributes
-   * - region.allocated_ip
-     - | name
-       | location
-       | latitude
-       | longitude
-       | ram_allocation_ratio
-       | cpu_allocation_ratio
-     - region.allocated_ip
-     - |
-       |
-       | *[none, depending on configuration]* (\*)
-     - ipAvailable
    * - region.pool_ip
      - | name
        | location
@@ -65,6 +53,7 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | *component*\_version
      - region.pool_ip
      - |
        | location
@@ -72,12 +61,14 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | *component*\_version [1]
      - | ipTot
        | location
        | latitude
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | *component*\_version
    * - region.used_ip
      - | name
        | location
@@ -85,21 +76,38 @@ Those data points are mapped to NGSI Entities according to the following:
        | longitude
        | ram_allocation_ratio
        | cpu_allocation_ratio
+       | *component*\_version
      - region.used_ip
      - |
        |
-       | *[none, depending on configuration]* (\*)
+       | *(none, depending on configuration)* [2]
      - ipUsed
+   * - region.allocated_ip
+     - | name
+       | location
+       | latitude
+       | longitude
+       | ram_allocation_ratio
+       | cpu_allocation_ratio
+       | *component*\_version
+     - region.allocated_ip
+     - |
+       |
+       | *(none, depending on configuration)* [2]
+     - ipAvailable
 
-(*)
-Available metadata items are configured at `monasca_field_definitions.yaml`
+**[1]** Here 'component' refers to any of the `OpenStack projects`_, and value
+of '*component*\_version' will denote the exact version being installed on the
+node (please note version numbers may not coincide with `OpenStack releases`_).
+
+**[2]** Metadata items are configured at `monasca_field_definitions.yaml`_
 file.
 
 |
 
 .. list-table:: **Entity Type = 'image'
                   (Id taken from 'resource_id' dimension)**
-   :widths: 30 20 15 20 15
+   :widths: 20 20 15 20 25
    :header-rows: 1
 
    * - Ceilometer metric
@@ -111,25 +119,25 @@ file.
      - | size
        | status
        | name
-       | properties: {nid}
+       | properties: *nid*
      - image
      - | size
        | status
        | name
-       | properties: {nid}
+       | properties: *nid*
      - | size
        | status
        | name
        | catalogue_ge_id
 
 **Note:**
-`nid` is a custom metadata property of images.
+*nid* is a custom metadata property of images.
 
 |
 
 .. list-table:: **Entity Type = 'host_service'
                   (Id taken from 'region' meta item and 'component' dimension)**
-   :widths: 30 20 15 20 15
+   :widths: 20 20 15 20 25
    :header-rows: 1
 
    * - Ceilometer metric
@@ -138,20 +146,21 @@ file.
      - Monasca value_meta
      - NGSI attributes
    * - processes.process_pid_count
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
-     - *component* (\*)
+     - *none*
+     - *component* [\*]
 
-(*)
-A 'component' dimension will identify the exact process (e.g. `nova-api`) part
-of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
+**[\*]**
+The 'component' dimension identifies the exact process (for instance,
+``nova-api``) being part of an OpenStack service (given by the 'service'
+dimension, for instance ``nova``).
 
 |
 
 .. list-table:: **Entity Type = 'host'
                   (Id taken from 'region' meta item and 'resource_id' dimension)**
-   :widths: 30 20 15 20 15
+   :widths: 20 20 15 20 25
    :header-rows: 1
 
    * - Ceilometer metric
@@ -160,61 +169,61 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
      - Monasca value_meta
      - NGSI attributes
    * - compute.node.cpu.percent
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - cpuPct
    * - compute.node.cpu.now
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - cpuNow
    * - compute.node.cpu.max
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - cpuMax
    * - compute.node.cpu.tot
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - cpuTot
    * - compute.node.disk.now
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - diskNow
    * - compute.node.disk.max
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - diskMax
    * - compute.node.disk.tot
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - diskTot
    * - compute.node.ram.now
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - ramNow
    * - compute.node.ram.max
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - ramMax
    * - compute.node.ram.tot
-     - *[none]*
+     - *none*
      - *= metric*
-     - *[none]*
+     - *none*
      - ramTot
 
 |
 
 .. list-table:: **Entity Type = 'vm'
                   (Id taken from 'region' meta item and 'resource_id' dimension)**
-   :widths: 30 20 15 20 15
+   :widths: 20 20 15 20 25
    :header-rows: 1
 
    * - Ceilometer metric
@@ -228,7 +237,7 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
        | status
        | instance_type
        | image_ref
-       | properties: {nid}
+       | properties: *nid*
        |
        |
      - *= metric*
@@ -237,7 +246,7 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
        | status
        | instance_type
        | image_ref
-       | properties: {nid}
+       | properties: *nid*
        |
        |
      - | name
@@ -246,8 +255,8 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
        | flavor
        | image
        | catalogue_ge_id
-       | user_id (\*)
-       | tenant_id (\*)
+       | user_id [\*]
+       | tenant_id [\*]
    * - cpu_util
      - *= instance meta*
      - *= metric*
@@ -274,10 +283,12 @@ of an OpenStack service (given by the 'service' dimension, e.g. `nova`).
      - *= ceilometer*
      - | diskUsed
 
-(*)
-Taken from 'user_id' and 'project_id' dimensions, respectively.
+**[\*]** Taken from 'user_id' and 'project_id' dimensions, respectively.
 
 
 .. REFERENCES
 
 .. _Monasca Persister: https://github.com/telefonicaid/monasca-persister/
+.. _monasca_field_definitions.yaml: https://github.com/telefonicaid/monasca-ceilometer/blob/fiware/etc/ceilometer/monasca_field_definitions.yaml
+.. _OpenStack projects: http://governance.openstack.org/reference/projects/index.html
+.. _OpenStack releases: https://wiki.openstack.org/wiki/Releases

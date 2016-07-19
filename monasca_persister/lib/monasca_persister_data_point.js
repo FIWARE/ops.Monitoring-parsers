@@ -62,6 +62,12 @@ var metricsMappingNGSI = {
 
 
 /**
+ * Region metric with metadata associated
+ */
+var regionMetricMetadata = 'region.pool_ip';
+
+
+/**
  * Parser object (extends NGSI Adapter base parser).
  */
 var parser = Object.create(null);
@@ -73,7 +79,7 @@ var parser = Object.create(null);
  * @function parseRequest
  * @memberof parser
  * @param {Domain} reqdomain   Domain handling current request (includes context, timestamp, id, type, body & parser).
- * @returns {EntityData} An object with `data` attribute holding data point, and also `entityType` attribute.
+ * @returns {EntityData}       An object with `data` attribute holding data point, and also `entityType` attribute.
  *
  * Data point is a JSON that should look like this: <code>
  *         {
@@ -146,7 +152,7 @@ parser.parseRequest = function (reqdomain) {
  * @function getContextAttrs
  * @memberof parser
  * @param {EntityData} data    Object holding raw entity data and entity type.
- * @returns {Object} Context attributes.
+ * @returns {Object}           Context attributes.
  */
 parser.getContextAttrs = function (entityData) {
     var attrs = {};
@@ -172,11 +178,11 @@ parser.getContextAttrs = function (entityData) {
     // Additional attributes depending on the entityType
     if (entityData.entityType === 'region') {
         if (attrName === 'region.sanity_status') {
+            attrName = attrValue = null;
             attrs['sanity_status'] = valueMeta['status'];
             attrs['sanity_check_elapsed_time'] = valueMeta['elapsed_time'];
             attrs['sanity_check_timestamp'] = entityData.data.metric['timestamp'].toString();
-            attrName = attrValue = null;
-        } else {
+        } else if (attrName === regionMetricMetadata) {
             for (item in valueMeta) {
                 attrs[metricsMappingNGSI[item] || item] = valueMeta[item];
             }
@@ -230,3 +236,9 @@ exports.parser = parser;
  * Metrics to NGSI mapping.
  */
 exports.metricsMappingNGSI = metricsMappingNGSI;
+
+
+/**
+ * Region metric with metadata associated.
+ */
+exports.regionMetricMetadata = regionMetricMetadata;
