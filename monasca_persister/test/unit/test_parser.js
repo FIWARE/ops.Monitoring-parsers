@@ -622,6 +622,47 @@ suite('parser', function () {
         assert.equal(Object.keys(contextAttrs).length, 1);
     });
 
+    test('parse_gets_valid_entity_type_of_data_point_memory_util', function () {
+        var type = 'vm',
+            metric = 'memory_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_memory_util', function () {
+        var type = 'vm',
+            metric = 'memory_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_memory_util', function () {
+        var type = 'vm',
+            metric = 'cpu_util',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric] || metric,
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
     test('parse_gets_valid_entity_type_of_data_point_cpu_util', function () {
         var type = 'vm',
             metric = 'cpu_util',
@@ -651,7 +692,48 @@ suite('parser', function () {
         var type = 'vm',
             metric = 'cpu_util',
             data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
-            expectedAttr = metricsMappingNGSI[metric],
+            expectedAttr = metricsMappingNGSI[metric] || metric,
+            expectedValue = data.metric.value,
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        var entityData = parser.parseRequest(reqdomain),
+            contextAttrs = parser.getContextAttrs(entityData);
+        assert(contextAttrs[expectedAttr]);
+        assert.equal(contextAttrs[expectedAttr], expectedValue);
+        assert.equal(Object.keys(contextAttrs).length, 1);
+    });
+
+    test('parse_gets_valid_entity_type_of_data_point_vcpus', function () {
+        var type = 'vm',
+            metric = 'vcpus',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert.equal(reqdomain.entityType, type);
+    });
+
+    test('parse_gets_valid_entity_id_of_data_point_vcpus', function () {
+        var type = 'vm',
+            metric = 'vcpus',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            region = this.sampleMetricRegion,
+            resource = data.metric.dimensions['resource_id'],
+            expectedIdPattern = util.format('%s:%s', region, resource),
+            reqdomain = {
+                body: JSON.stringify(data)
+            };
+        parser.parseRequest(reqdomain);
+        assert(reqdomain.entityId.match(new RegExp(expectedIdPattern)));
+    });
+
+    test('context_attr_is_single_value_of_data_point_vcpus', function () {
+        var type = 'vm',
+            metric = 'vcpus',
+            data = require('./sample_data_point_' + type + '_' + metric.replace('.', '_') + '.json'),
+            expectedAttr = metricsMappingNGSI[metric] || metric,
             expectedValue = data.metric.value,
             reqdomain = {
                 body: JSON.stringify(data)

@@ -28,7 +28,7 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
         }
       },
       "meta": {
-        "tenantId": "str",          // = tenant_id if the user submitting the metric
+        "tenantId": "str",          // = tenant_id of the user submitting the metric
         "region": "str"             // = region that Monasca API is bound to
       }
     }
@@ -257,6 +257,11 @@ dimension, for instance ``nova``).
        | catalogue_ge_id
        | user_id [\*]
        | tenant_id [\*]
+   * - vcpus
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | vcpus
    * - cpu_util
      - *= instance meta*
      - *= metric*
@@ -272,6 +277,11 @@ dimension, for instance ``nova``).
      - *= metric*
      - *= ceilometer*
      - | ramUsed
+   * - memory_util
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | usedMemPct
    * - disk.capacity
      - *= instance meta*
      - *= metric*

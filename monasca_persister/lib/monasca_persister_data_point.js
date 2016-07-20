@@ -53,6 +53,7 @@ var metricsMappingNGSI = {
     'disk.capacity': 'diskTot',
     'disk.usage': 'diskUsed',
     'cpu_util': 'cpuLoadPct',
+    'memory_util': 'usedMemPct',
     'instance_type': 'flavor',
     'image_ref': 'image',
     'project_id': 'tenant_id',
@@ -130,7 +131,7 @@ parser.parseRequest = function (reqdomain) {
     } else if (name === 'image') {
         reqdomain.entityType = 'image';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
-    } else if (name.match(/instance|memory|memory.usage|disk.capacity|disk.usage|cpu_util/)) {
+    } else if (name.match(/instance|memory|memory.usage|memory_util|disk.capacity|disk.usage|cpu_util|vcpus/)) {
         reqdomain.entityType = 'vm';
         reqdomain.entityId = util.format('%s:%s', region, dimensions['resource_id']);
     } else if ('component' in dimensions) {
