@@ -257,6 +257,11 @@ dimension, for instance ``nova``).
        | catalogue_ge_id
        | user_id [\*]
        | tenant_id [\*]
+   * - vcpus
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | vcpus
    * - cpu_util
      - *= instance meta*
      - *= metric*
@@ -272,6 +277,11 @@ dimension, for instance ``nova``).
      - *= metric*
      - *= ceilometer*
      - | ramUsed
+   * - memory_util
+     - *= instance meta*
+     - *= metric*
+     - *= ceilometer*
+     - | usedMemPct
    * - disk.capacity
      - *= instance meta*
      - *= metric*
