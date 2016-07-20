@@ -1,0 +1,1 @@
+CRITICAL - Socket timeout after 10 seconds
