@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "name": "nagios_checks",
+  "description": "Nagios checks parsers for NGSI Adapter",
+  "product": {
+    "name": "fiware-monitoring",
+    "area": "iotplatform",
+    "release": "5.4.1"
+  },
+  "keywords": [
+    "FIWARE",
+    "Monitoring",
+    "Nagios"
+  ],
+  "author": "Telefónica I+D",
+  "license": "Apache License 2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/telefonicaid/fiware-monitoring-parsers.git"
+  },
+  "artifacts": {
+    "url": "http://repositories.lab.fiware.org/repo"
+  },
+  "readmeFilename": "README.rst",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "engines": {
+    "node": ">=0.10.18"
+  },
+  "devDependencies": {
+    "mocha": "~1.13.0",
+    "xml2js": ">=0.2.8",
+    "grunt": "~0.4.1",
+    "grunt-exec": "~0.4.0",
+    "grunt-env": "~0.4.1",
+    "grunt-dox": "~0.5.0",
+    "grunt-plato": "~0.2.0",
+    "grunt-mkdir": "~0.1.1",
+    "grunt-gjslint": "~0.1.0",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-mocha-test": "~0.7.0",
+    "grunt-mocha-istanbul": "~3.0.1",
+    "load-grunt-tasks": "~3.3.0",
+    "closure-linter-wrapper": "^0.2.11",
+    "xunit-file": "~0.0.5",
+    "chai": "~1.8.0",
+    "sinon": "~1.7.3",
+    "sinon-chai": "2.4.0",
+    "istanbul": "~0.4.0",
+    "proxyquire": "0.5.1",
+    "dev-null": "0.1.1"
+  }
+}
