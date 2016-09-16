@@ -105,7 +105,8 @@ var parser = Object.create(null);
  *           },
  *           "meta": {
  *             "tenantId": "str",                   // = tenant_id if the user submitting the metric
- *             "region": "str"                      // = region that Monasca API is bound to
+ *             "region": "str",                     // = region that Monasca API is bound to
+ *             "msgId": "str"                       // = identifier of this incoming message
  *           }
  *         }
  * </code>
@@ -140,6 +141,11 @@ parser.parseRequest = function (reqdomain) {
         reqdomain.entityId = util.format('%s:%s:%s', region, hostname, dimensions['component']);
     } else {
         throw new Error('Data point could not be mapped to a NGSI entity (unknown metric name or dimensions)');
+    }
+
+    // Add message identifier to context's transaction id (if present)
+    if (dataPoint.meta['msgId']) {
+        reqdomain.context.trans += util.format(' | id=%s', dataPoint.meta['msgId']);
     }
 
     // Return the data point
