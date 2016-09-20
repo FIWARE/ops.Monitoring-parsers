@@ -29,7 +29,8 @@ This parser processes monitoring data from `Monasca Persister`_ formatted as
       },
       "meta": {
         "tenantId": "str",          // = tenant_id of the user submitting the metric
-        "region": "str"             // = region that Monasca API is bound to
+        "region": "str",            // = region that Monasca API is bound to
+        "msgId": "str"              // = identifier of this incoming message
       }
     }
 
