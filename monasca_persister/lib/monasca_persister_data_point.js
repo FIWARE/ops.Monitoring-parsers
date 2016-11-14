@@ -143,9 +143,9 @@ parser.parseRequest = function (reqdomain) {
         throw new Error('Data point could not be mapped to a NGSI entity (unknown metric name or dimensions)');
     }
 
-    // Add message identifier to context's transaction id (if present)
+    // Add message identifier to context as correlator (if present)
     if (dataPoint.meta['msgId']) {
-        reqdomain.context.trans += util.format(' | id=%s', dataPoint.meta['msgId']);
+        reqdomain.context.corr = dataPoint.meta['msgId'];
     }
 
     // Return the data point
