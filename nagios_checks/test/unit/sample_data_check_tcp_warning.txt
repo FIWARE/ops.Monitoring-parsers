@@ -1,0 +1,1 @@
+TCP WARNING - 0.057 second response time on port 5666|time=0.056678s;0.003000;;0.000000;10.000000

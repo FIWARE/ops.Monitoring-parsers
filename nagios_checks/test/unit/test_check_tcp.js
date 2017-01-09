@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Telefónica I+D
+ * Copyright 2017 FIWARE Foundation, e.V.
  * All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -17,9 +17,9 @@
 
 
 /**
- * Module that defines unit tests for the Nagios 'check_http' plugin parser.
+ * Module that defines unit tests for the Nagios 'check_tcp' plugin parser.
  *
- * @module test_check_http
+ * @module test_check_tcp
  */
 
 
@@ -28,7 +28,7 @@
 
 var fs = require('fs'),
     assert = require('assert'),
-    parser = require('../../lib/check_http').parser;
+    parser = require('../../lib/check_tcp').parser;
 
 
 suite('parser', function () {
@@ -48,20 +48,7 @@ suite('parser', function () {
 
     test('context_attrs_include_status_ok', function () {
         var status = 'OK',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_' + status.toLowerCase() + '.txt'),
-            expectedValue = status,
-            reqdomain = {
-                body: data.toString()
-            };
-        var entityData = parser.parseRequest(reqdomain),
-            contextAttrs = parser.getContextAttrs(entityData);
-        assert(contextAttrs[this.expectedAttr]);
-        assert.equal(contextAttrs[this.expectedAttr], expectedValue);
-    });
-
-    test('context_attrs_include_status_ok_2', function () {
-        var status = 'OK',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_' + status.toLowerCase() + '_2.txt'),
+            data = fs.readFileSync('./test/unit/sample_data_check_tcp_' + status.toLowerCase() + '.txt'),
             expectedValue = status,
             reqdomain = {
                 body: data.toString()
@@ -74,7 +61,7 @@ suite('parser', function () {
 
     test('context_attrs_include_status_warning', function () {
         var status = 'WARNING',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_' + status.toLowerCase() + '.txt'),
+            data = fs.readFileSync('./test/unit/sample_data_check_tcp_' + status.toLowerCase() + '.txt'),
             expectedValue = status,
             reqdomain = {
                 body: data.toString()
@@ -87,7 +74,7 @@ suite('parser', function () {
 
     test('context_attrs_include_status_critical', function () {
         var status = 'CRITICAL',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_' + status.toLowerCase() + '.txt'),
+            data = fs.readFileSync('./test/unit/sample_data_check_tcp_' + status.toLowerCase() + '.txt'),
             expectedValue = status,
             reqdomain = {
                 body: data.toString()
@@ -98,9 +85,9 @@ suite('parser', function () {
         assert.equal(contextAttrs[this.expectedAttr], expectedValue);
     });
 
-    test('context_attrs_include_status_no_route_to_hosts', function () {
+    test('context_attrs_include_status_no_route_to_host', function () {
         var status = 'CRITICAL',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_no_route_to_host.txt'),
+            data = fs.readFileSync('./test/unit/sample_data_check_tcp_no_route_to_host.txt'),
             expectedValue = status,
             reqdomain = {
                 body: data.toString()
@@ -111,16 +98,4 @@ suite('parser', function () {
         assert.equal(contextAttrs[this.expectedAttr], expectedValue);
     });
 
-    test('context_attrs_include_status_no_route_to_hosts_2', function () {
-        var status = 'CRITICAL',
-            data = fs.readFileSync('./test/unit/sample_data_check_http_no_route_to_host_2.txt'),
-            expectedValue = status,
-            reqdomain = {
-                body: data.toString()
-            };
-        var entityData = parser.parseRequest(reqdomain),
-            contextAttrs = parser.getContextAttrs(entityData);
-        assert(contextAttrs[this.expectedAttr]);
-        assert.equal(contextAttrs[this.expectedAttr], expectedValue);
-    });
 });

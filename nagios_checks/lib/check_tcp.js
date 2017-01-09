@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Telefónica I+D
+ * Copyright 2017 FIWARE Foundation, e.V.
  * All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -17,22 +17,23 @@
 
 
 /**
- * Module that defines a parser object for Nagios 'check_http' plugin.
+ * Module that defines a parser object for Nagios 'check_tcp' plugin.
  *
  * Sample outputs from plugin:
  *
  * <code>
- * HTTP OK: HTTP/1.1 200 OK - 108168 bytes in 0.070 second response time |time=1.794274s;5.000000;10.000000;0.000000 size=108168B;;;0
- * HTTP WARNING: HTTP/1.1 200 OK - 108168 bytes in 5.783 second response time |time=1.783226s;1.000000;10.000000;0.000000 size=108168B;;;0
- * CRITICAL - Socket timeout after 10 seconds
+ * TCP OK - 0.000 second response time on port 80|time=0.000222s;;;0.000000;10.000000
+ * TCP WARNING - 0.057 second response time on port 5666|time=0.056678s;0.003000;;0.000000;10.000000
+ * TCP CRITICAL - 0.057 second response time on port 5666|time=0.056597s;;0.003000;0.000000;10.000000
+ * No route to host
  * </code>
  *
  * Context attributes to be calculated:
  *
  * - status = string describing result from check (OK|WARNING|CRITICAL)
  *
- * @module check_http
- * @see https://nagios-plugins.org/doc/man/check_http.html
+ * @module check_tcp
+ * @see https://nagios-plugins.org/doc/man/check_tcp.html
  */
 
 
@@ -54,21 +55,14 @@ var parser = Object.create(null);
  * @returns {EntityData}       An object with `data` attribute holding raw plugin data.
  */
 parser.parseRequest = function (reqdomain) {
-    var array = reqdomain.body.split('\n');
-    var length = array.length;
-
-    // We can obtain some error messages previously to the notification of the check_http
-    // therefore we have to discard in that case the first line and get only the valid one
-    // which is the 0 (from length 2) in case no error message and 1 (from length 3) in
-    // case of error message, if the message has length 1 we get the 0.
-    var entityData = { data: (length === 1) ? array[0] : array[length - 2] };
+    var entityData = { data: reqdomain.body.split('\n')[0] };
 
     return entityData;
 };
 
 
 /**
- * Parses `check_http` raw data to extract an object whose members are NGSI context attributes.
+ * Parses `check_tcp` raw data to extract an object whose members are NGSI context attributes.
  *
  * @function getContextAttrs
  * @memberof parser
@@ -76,7 +70,7 @@ parser.parseRequest = function (reqdomain) {
  * @returns {Object}           Context attributes.
  */
 parser.getContextAttrs = function (entityData) {
-    var data = entityData.data.split(/[:-]/)[0].replace('HTTP', '').trim();
+    var data = entityData.data.split(/-/)[0].replace('TCP', '').trim();
 
     if ( data !== 'OK' && data !== 'WARNING' && data !== 'CRITICAL' ) {
         data = 'CRITICAL';
@@ -89,6 +83,6 @@ parser.getContextAttrs = function (entityData) {
 
 
 /**
- * The `check_http` parser.
+ * The `check_tcp` parser.
  */
 exports.parser = parser;

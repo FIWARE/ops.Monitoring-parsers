@@ -1,0 +1,2 @@
+No route to host
+HTTP CRITICAL - Unable to open TCP socket
